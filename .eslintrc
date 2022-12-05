@@ -1,4 +1,3 @@
 {
-  "extends": ["wesbos/typescript", "prettier"],
-  "comma-dangle": 0
+  "extends": ["wesbos/typescript", "prettier"]
 }

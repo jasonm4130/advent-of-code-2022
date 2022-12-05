@@ -1,62 +1,71 @@
 import { resolve } from 'path';
-import { readInput } from "../common/readInput";
+import { readInput } from '../common/readInput';
 
-const LETTERS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+export const LETTERS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 export function transformData(data: string) {
   return data.split(/\n/).map((line) => {
-    const length = line.length;
+    const { length } = line;
 
-    const [compartmentA, compartmentB] = [line.slice(0, length / 2), line.slice(length / 2)]
+    const [compartmentA, compartmentB] = [
+      line.slice(0, length / 2),
+      line.slice(length / 2),
+    ];
 
-    return {compartmentA, compartmentB}
+    return { compartmentA, compartmentB };
   });
 }
 
-export function getReoccurringItems(data: {compartmentA: string, compartmentB: string}[]) {
-  return data.map(({compartmentA, compartmentB}) => {
+export function getReoccurringItems(
+  data: { compartmentA: string; compartmentB: string }[]
+) {
+  return data.map(({ compartmentA, compartmentB }) => {
     let itemToMove = '';
     compartmentA.split('').forEach((letter) => {
       if (compartmentB.includes(letter)) {
         itemToMove = letter;
       }
-    })
+    });
     return itemToMove;
   });
 }
 
 export function getPriority(data: string[]) {
-  return data.map((letter) => {
-    return LETTERS.indexOf(letter) + 1;
-  })
+  return data.map((letter) => LETTERS.indexOf(letter) + 1);
 }
 
 export function transformDataPartTwo(data: string) {
-  return data.split(/\n/).reduce((accumulator, line) => {
-    // If there are three elves in the group add another group
-    if (accumulator.at(-1)!.length === 3) {
-      accumulator.push([]);
-    }
+  return data.split(/\n/).reduce(
+    (accumulator, line) => {
+      // If there are three elves in the group add another group
+      if (accumulator.at(-1)!.length === 3) {
+        accumulator.push([]);
+      }
 
-    // Add the elf to the group
-    accumulator.at(-1)?.push(line);
+      // Add the elf to the group
+      accumulator.at(-1)?.push(line);
 
-    // Return our items
-    return accumulator;
-  }, [[]] as string[][]);
+      // Return our items
+      return accumulator;
+    },
+    [[]] as string[][]
+  );
 }
 
 export function getBadgeItems(data: string[][]) {
   return data.map((group) => {
-    let possibleBadgeItems = group.at(0)?.split('');
+    const possibleBadgeItems = group.at(0)?.split('');
 
+    // eslint-disable-next-line no-plusplus
     for (let i = 0; i < possibleBadgeItems!.length; i++) {
       const letter = possibleBadgeItems![i];
       if (group.every((pack) => pack.includes(letter))) {
         return letter;
       }
-    };
-  })
+    }
+
+    return '';
+  });
 }
 
 (() => {
@@ -68,21 +77,20 @@ export function getBadgeItems(data: string[][]) {
 
   const priorities = getPriority(reoccurringItems);
 
-  const sumOfPriorities = priorities.reduce((sum, num) => {
-    return sum + num;
-  }, 0);
+  const sumOfPriorities = priorities.reduce((sum, num) => sum + num, 0);
 
   console.log(`The sum of the priorities is ${sumOfPriorities}`);
 
   const partTwoTransformedData = transformDataPartTwo(data);
 
-  const badgeItems = getBadgeItems(partTwoTransformedData) as string[];
+  const badgeItems = getBadgeItems(partTwoTransformedData);
 
   const partTwoPriorities = getPriority(badgeItems);
 
-  const sumOfPartTwoPriorities = partTwoPriorities.reduce((sum, num) => {
-    return sum + num;
-  }, 0);
+  const sumOfPartTwoPriorities = partTwoPriorities.reduce(
+    (sum, num) => sum + num,
+    0
+  );
 
-  console.log(`the sum of part two priorities is ${sumOfPartTwoPriorities}`)
-})()
+  console.log(`the sum of part two priorities is ${sumOfPartTwoPriorities}`);
+})();
